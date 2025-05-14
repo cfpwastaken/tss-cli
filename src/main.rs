@@ -83,9 +83,17 @@ fn main() {
 
 		let lines: Vec<&str> = text.split("\\n").collect();
 		for (i, line) in lines.iter().enumerate() {
-			let text_segment = ril::TextSegment::new(&font, line, ril::Rgb::white())
-				.with_position(20, 20 + i as u32 * 30); // Adjust the vertical spacing as needed
-			image.draw(&text_segment);
+			if line.starts_with("§") {
+				// §<RRGGBB>
+				let color_hex = line.chars().skip(1).take(6).collect::<String>();
+				let text_segment = ril::TextSegment::new(&font, &line[8..], ril::Rgb::from_hex(color_hex).unwrap())
+					.with_position(20, 20 + i as u32 * 30); // Adjust the vertical spacing as needed
+				image.draw(&text_segment);
+			} else {
+				let text_segment = ril::TextSegment::new(&font, line, ril::Rgb::white())
+					.with_position(20, 20 + i as u32 * 30); // Adjust the vertical spacing as needed
+				image.draw(&text_segment);
+			}
 		}
 		image.save_inferred("/tmp/text.png").expect("Failed to save");
 
